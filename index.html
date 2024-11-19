@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Canvas Text Editor</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@400;600&family=Montserrat:wght@400;700&family=Open+Sans:wght@400;700&family=Lato:wght@400;700&family=Inter:wght@400;600&family=Playfair+Display:wght@400;700&family=Source+Sans+Pro:wght@400;700&family=Ubuntu:wght@400;700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <script type="module" src="script.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="toolbar">
+        <button id="addTextBtn">Add Text</button>
+        <select id="fontFamily">
+          <option value="Roboto, sans-serif">Roboto</option>
+          <option value="Poppins, sans-serif">Poppins</option>
+          <option value="Montserrat, sans-serif">Montserrat</option>
+          <option value="Open Sans, sans-serif">Open Sans</option>
+          <option value="Lato, sans-serif">Lato</option>
+          <option value="Inter, sans-serif">Inter</option>
+          <option value="Playfair Display, serif">Playfair Display</option>
+          <option value="Source Sans Pro, sans-serif">Source Sans Pro</option>
+          <option value="Ubuntu, sans-serif">Ubuntu</option>
+          <option value="Nunito, sans-serif">Nunito</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="Times New Roman, serif">Times New Roman</option>
+          <option value="Courier New, monospace">Courier New</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+        </select>
+        <select id="fontSize">
+          <option value="8">8px</option>
+          <option value="10">10px</option>
+          <option value="12">12px</option>
+          <option value="14">14px</option>
+          <option value="16">16px</option>
+          <option value="18">18px</option>
+          <option value="20">20px</option>
+          <option value="24">24px</option>
+          <option value="28">28px</option>
+          <option value="32">32px</option>
+          <option value="36">36px</option>
+          <option value="48">48px</option>
+          <option value="72">72px</option>
+        </select>
+        <input type="color" id="colorPicker" value="#000000" title="Text Color">
+        <div class="style-buttons">
+          <button id="boldBtn" title="Bold">B</button>
+          <button id="italicBtn" title="Italic">I</button>
+          <button id="underlineBtn" title="Underline">U</button>
+          <button id="strikeBtn" title="Strikethrough">S</button>
+          
+
+        </div>
+        <div class="history-buttons">
+          <button id="undoBtn" title="Undo">↩</button>
+          <button id="redoBtn" title="Redo">↪</button>
+        </div>
+      </div>
+      <canvas id="canvas"></canvas>
+    </div>
+  </body>
+</html>

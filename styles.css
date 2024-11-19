@@ -1,0 +1,184 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: linear-gradient(to bottom, #ffffff, #f1f3f5);
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  font-family: 'Inter', sans-serif;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  align-items: center;
+}
+
+#canvas {
+  border: 2px solid #d9d9d9;
+  background: #ffffff;
+  border-radius: 10px;
+  height: 350px;
+  display: block;
+  margin: 0 auto;
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.1);
+  cursor: crosshair;
+  transition: all 0.3s ease;
+}
+
+#canvas:hover {
+  border-color: #a1a1a1;
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+#toggleBorderBtn {
+  margin-left: 5px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: 1px solid #28a745;
+  background: #28a745;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#toggleBorderBtn:hover {
+  background: #218838;
+  border-color: #1e7e34;
+}
+
+button {
+  padding: 0.7rem 1.2rem;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #f7f7f7;
+  border-color: #b3b3b3;
+}
+
+button.active {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+select, input {
+  padding: 0.7rem;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+}
+
+#colorPicker {
+  width: 50px;
+  height: 50px;
+  padding: 3px;
+  border: 1px solid #cccccc;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#addTextBtn {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
+  transition: background 0.3s ease;
+}
+
+#addTextBtn:hover {
+  background: #138496;
+}
+
+.style-buttons, .history-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+#boldBtn {
+  font-weight: bold;
+  background: #f0f0f0;
+}
+
+#italicBtn {
+  font-style: italic;
+  background: #f0f0f0;
+}
+
+#underlineBtn {
+  text-decoration: underline;
+  background: #f0f0f0;
+}
+
+#strikeBtn {
+  text-decoration: line-through;
+  background: #f0f0f0;
+}
+
+select {
+  min-width: 160px;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  button, select, input {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+  }
+
+  #canvas {
+    height: 280px;
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.75rem;
+  }
+
+  .toolbar {
+    gap: 0.5rem;
+  }
+
+  button, select, input {
+    font-size: 0.8rem;
+    padding: 0.5rem;
+  }
+
+  #canvas {
+    height: 220px;
+    width: 100%;
+  }
+}
