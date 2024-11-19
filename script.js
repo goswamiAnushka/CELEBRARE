@@ -3,7 +3,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = 700;
 canvas.height = 400;
 
-
+// Make canvas focusable
 canvas.tabIndex = 1;
 
 let isDragging = false;
@@ -13,6 +13,7 @@ let offsetY = 0;
 let cursorIndex = 0;
 let selectionStart = null;
 let selectionEnd = null;
+let textInputElement = null; // Hidden input field
 const textBoxes = [];
 const history = [];
 const redoStack = [];
@@ -109,7 +110,36 @@ document.getElementById("redoBtn").addEventListener("click", () => {
   }
 });
 
+// Activate mobile keyboard by focusing on a hidden input field (for small screens only)
+function activateMobileKeyboard(textBox) {
+  if (!isSmallScreen()) return;
 
+  if (textInputElement) {
+    document.body.removeChild(textInputElement);
+  }
+
+  textInputElement = document.createElement("input");
+  textInputElement.type = "text";
+  textInputElement.style.position = "absolute";
+  textInputElement.style.opacity = "0"; // Hidden input field
+  textInputElement.style.zIndex = "-1";
+  textInputElement.value = textBox.text;
+
+  document.body.appendChild(textInputElement);
+  textInputElement.focus();
+
+  textInputElement.addEventListener("input", (e) => {
+    textBox.text = e.target.value;
+    drawCanvas();
+  });
+
+  textInputElement.addEventListener("blur", () => {
+    textBox.isEditing = false;
+    drawCanvas();
+  });
+}
+
+// Handle mouse events
 canvas.addEventListener("mousedown", (e) => {
   const { offsetX: x, offsetY: y } = e;
   for (const textBox of textBoxes) {
@@ -123,7 +153,10 @@ canvas.addEventListener("mousedown", (e) => {
       selectedTextBox = textBox;
       offsetX = x - textBox.x;
       offsetY = y - textBox.y;
-      break;
+
+      // Activate keyboard on tap for smaller screens
+      if (isSmallScreen()) activateMobileKeyboard(textBox);
+      return;
     }
   }
 });
@@ -208,24 +241,26 @@ function drawCanvas() {
 }
 
 function drawTextBox(textBox) {
-  
   const fontStyle = [
     textBox.style.italic ? "italic" : "",
     textBox.style.bold ? "bold" : "",
     textBox.font,
-  ].filter(Boolean).join(" ");
-  
-  ctx.font = fontStyle; 
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  ctx.font = fontStyle;
   ctx.fillStyle = textBox.color;
 
-  textBox.lines = textBox.lines || [""];
-  let y = textBox.y + lineHeight;
+  // Ensure lines are wrapped
+  textBox.lines = wrapText(textBox);
 
+  let y = textBox.y + lineHeight;
   for (let i = 0; i < textBox.lines.length; i++) {
     const line = textBox.lines[i];
     ctx.fillText(line, textBox.x + margin, y);
 
-   
+    // Draw decorations like underline or strike-through
     if (textBox.style.underline || textBox.style.strike) {
       drawTextDecorations(line, textBox, y, textBox.style.underline, textBox.style.strike);
     }
@@ -233,80 +268,97 @@ function drawTextBox(textBox) {
     y += lineHeight;
   }
 
+  // Draw the cursor if the text box is being edited
   if (textBox.isEditing && selectedTextBox === textBox) {
     drawCursor(textBox);
   }
 }
 
 function wrapText(textBox) {
-  const words = textBox.text.split(" ");
+  const words = textBox.text.split(""); // Split into characters
   const lines = [];
   let line = "";
 
-  for (const word of words) {
-    const testLine = `${line}${word} `;
+  for (const char of words) {
+    const testLine = `${line}${char}`;
     const testWidth = ctx.measureText(testLine).width;
 
-    if (testWidth > textBox.width) {
-     
+    if (testWidth > textBox.width - margin * 2) {
+      // If the line width exceeds the text box width, move to the next line
       lines.push(line.trim());
-      line = `${word} `;
+      line = char;
     } else {
       line = testLine;
     }
   }
 
- 
-  lines.push(line.trim());
-
-
-  const textHeight = lines.length * lineHeight;
-  if (textHeight > canvas.height - margin) {
-  
-    const maxLines = Math.floor((canvas.height - margin * 2) / lineHeight);
-    return lines.slice(0, maxLines);
+  // Push the last line if it contains any characters
+  if (line.trim()) {
+    lines.push(line.trim());
   }
 
-  return lines;
+  // Ensure lines stay within the vertical canvas boundaries
+  const maxLines = Math.floor((canvas.height - textBox.y) / lineHeight);
+  return lines.slice(0, maxLines);
 }
 
 function drawCursor(textBox) {
-  const lines = textBox.lines;
-  const currentLineIndex = lines.length - 1;
-  const lineText = lines[currentLineIndex] || "";
+  // Calculate the cursor position
+  const lines = textBox.lines || [""];
+  const currentLineIndex = lines.length - 1; // Cursor on the last line
+  const currentLine = lines[currentLineIndex] || "";
 
   ctx.font = textBox.font;
-  const cursorX = textBox.x + margin + ctx.measureText(lineText).width;
+  const cursorX = textBox.x + margin + ctx.measureText(currentLine).width;
   const cursorY = textBox.y + lineHeight * (currentLineIndex + 1);
 
-
+  // Draw the cursor
   ctx.beginPath();
   ctx.moveTo(cursorX, cursorY - lineHeight + 4);
   ctx.lineTo(cursorX, cursorY - 4);
   ctx.stroke();
 }
+
 function drawTextDecorations(line, textBox, y, underline, strike) {
-  const textMetrics = ctx.measureText(line);
-  const textWidth = textMetrics.width;
-
-
+  const textWidth = ctx.measureText(line).width;
   const fontSize = parseInt(textBox.font.match(/\d+/)[0], 10);
-  const underlineY = y + 2;
-  const strikeY = y - fontSize / 3;
+
+  // Calculate positions for underline and strike-through
+  const underlineY = y + 2; // Just below the baseline
+  const strikeY = y - fontSize / 3; // A third of the way down from the top of the text
+
+  ctx.strokeStyle = textBox.color; // Use the text color for decorations
+  ctx.lineWidth = 1.5; // Slightly thicker line for visibility
 
   ctx.beginPath();
-  ctx.strokeStyle = textBox.color;
-  ctx.lineWidth = 1.5;
-
   if (underline) {
+    // Draw underline
     ctx.moveTo(textBox.x + margin, underlineY);
     ctx.lineTo(textBox.x + margin + textWidth, underlineY);
   }
-
   if (strike) {
+    // Draw strike-through
     ctx.moveTo(textBox.x + margin, strikeY);
     ctx.lineTo(textBox.x + margin + textWidth, strikeY);
   }
-
   ctx.stroke();
 }
+
+canvas.addEventListener("keydown", (e) => {
+  if (selectedTextBox && selectedTextBox.isEditing) {
+    const textBox = selectedTextBox;
+
+    if (e.key === "Backspace") {
+      // Remove the last character
+      if (textBox.text.length > 0) {
+        textBox.text = textBox.text.slice(0, -1);
+      }
+    } else if (e.key.length === 1) {
+      // Add the typed character to the text
+      textBox.text += e.key;
+    }
+
+    saveHistory();
+    drawCanvas();
+  }
+});
